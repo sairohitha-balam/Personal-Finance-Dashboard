@@ -77,13 +77,13 @@ cd YOUR_REPOSITORY_NAME
 
 ## 3. Run the Application
 
-### 🅰 Option A: Simple (Open the File)
+###  Option A: Simple (Open the File)
 
 Simply open the `index.html` file in your default web browser.
 
 ---
 
-### 🅱 Option B: Recommended (Run a Local Server)
+###  Option B: Run a Local Server
 
 Running a local server avoids potential browser security restrictions with `localStorage`.
 
@@ -98,7 +98,8 @@ serve
 ```
 Then open the URL provided in your terminal (usually http://localhost:3000).
 
-Or, if you have Python 3:
+Or, 
+###  Option C: If you have Python 3:
 ```bash
 python3 -m http.server
 ```
