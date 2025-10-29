@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<!-- The 'dark' class is now added/removed by JavaScript -->
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance Dashboard</title>
+  
+  <!-- External Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  
+  <!-- Your Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Immediate script to set theme and prevent FOUC (Flash of Unstyled Content) -->
+  <script>
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+  
+  <!-- Tailwind CSS Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class', // Kept as 'class'
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            positive: 'var(--color-positive)',
+            negative: 'var(--color-negative)',
+            primary: {
+              DEFAULT: 'var(--color-primary)',
+              light: 'var(--color-primary-light)',
+            },
+            slate: {
+              800: '#1e293b',
+              900: '#0f172a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+
+  <div class="container mx-auto p-4 md:p-6">
+    
+    <header id="dashboard-header" class="mb-6 flex flex-col sm:flex-row justify-between items-center">
+      <h1 class="text-3xl font-bold text-primary">Finance Dashboard</h1>
+      <div class="flex items-center gap-4 mt-2 sm:mt-0">
+        <span class="text-gray-600 dark:text-gray-400 text-sm">Welcome back, User!</span>
+        <!-- Theme Toggle Button -->
+        <button id="theme-toggle-btn" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+          <span class="sr-only">Toggle theme</span>
+          <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+          <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Main Content Area -->
+      <div id="main-content" class="lg:col-span-2 flex flex-col gap-6">
+
+        <section id="summary-cards" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+          
+          <!-- Card 1: Total Balance -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
+            <div class="flex items-center gap-4">
+              <div class="p-3 bg-primary-light rounded-full text-primary">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="text-sm text-gray-500 dark:text-gray-400">Total Balance</span>
+                <span class="block text-xl font-bold break-words" id="total-balance">₹0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Monthly Income -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
+            <div class="flex items-center gap-4">
+              <div class="p-3 bg-green-100 rounded-full text-green-600">
+                <i data-lucide="trending-up" class="w-6 h-6"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="text-sm text-gray-500 dark:text-gray-400">Monthly Income</span>
+                <span class="block text-xl font-bold break-words" id="monthly-income">₹0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Total Expenses -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
+            <div class="flex items-center gap-4">
+              <div class="p-3 bg-red-100 rounded-full text-red-600">
+                <i data-lucide="trending-down" class="w-6 h-6"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="text-sm text-gray-500 dark:text-gray-400">Total Expenses</span>
+                <span class="block text-xl font-bold break-words" id="total-expenses">₹0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Investments -->
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md transition-all duration-300 hover:shadow-lg">
+            <div class="flex items-center gap-4">
+              <div class="p-3 bg-indigo-100 rounded-full text-indigo-600">
+                <i data-lucide="bar-chart-2" class="w-6 h-6"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="text-sm text-gray-500 dark:text-gray-400">Investments</span>
+                <span class="block text-xl font-bold break-words" id="investment-total">₹0.00</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+            <h3 class="text-xl font-semibold mb-4">Expense Breakdown</h3>
+            <div class="chart-container">
+              <canvas id="expensePieChart"></canvas>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+            <h3 class="text-xl font-semibold mb-4">Income vs. Expenses</h3>
+            <div class="chart-container">
+              <canvas id="incomeExpenseBarChart"></canvas>
+            </div>
+          </div>
+        </section>
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Monthly Spending Trend</h3>
+          <div class="chart-container">
+            <canvas id="spendingLineChart"></canvas>
+          </div>
+        </section>
+
+        <!-- Transaction History -->
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+          <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Transaction History</h3>
+            <div class="mt-4 sm:mt-0">
+              <label for="category-filter" class="text-sm font-medium mr-2">Filter:</label>
+              <select id="category-filter" class="p-2 border rounded-md text-sm focus:ring-2 focus:ring-primary bg-white dark:bg-slate-700 dark:border-slate-600">
+                <option value="all">All Categories</option>
+                <option value="Income">Income</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Rent">Rent</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="overflow-x-auto max-h-96 transaction-history">
+            <table class="w-full min-w-[600px] table-auto">
+              <thead class="bg-gray-50 dark:bg-slate-700 border-b dark:border-slate-600">
+                <tr>
+                  <th class="p-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Description</th>
+                  <th class="p-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Category</th>
+                  <th class="p-4 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Date</th>
+                  <th class="p-4 text-right text-sm font-semibold text-gray-600 dark:text-gray-300">Amount</th>
+                  <th class="p-4 text-right text-sm font-semibold text-gray-600 dark:text-gray-300">Action</th>
+                </tr>
+              </thead>
+              <tbody id="transaction-table-body">
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar Area -->
+      <div id="sidebar-content" class="lg:col-span-1 flex flex-col gap-6">
+
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Add New Transaction</h3>
+          <form id="transaction-form" class="flex flex-col gap-4">
+            <div>
+              <label for="transaction-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+              <select id="transaction-type" name="type" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </div>
+            <div>
+              <label for="transaction-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+              <input type="text" id="transaction-description" name="description" required placeholder="e.g., Coffee" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
+            </div>
+            <div>
+              <label for="transaction-amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 dark:text-gray-400">₹</span>
+                <input type="number" id="transaction-amount" name="amount" required placeholder="0.00" min="0.01" step="0.01" class="w-full pl-7 p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
+              </div>
+            </div>
+            <div>
+              <label for="transaction-category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+              <select id="transaction-category" name="category" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
+              </select>
+            </div>
+            <div>
+              <label for="transaction-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+              <input type="date" id="transaction-date" name="date" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
+            </div>
+            <p id="form-error" class="text-sm text-negative hidden">Please fill out all fields correctly.</p>
+            <!-- 
+              *** THIS IS THE CHANGE ***
+              Changed bg-primary to bg-indigo-600
+              Changed hover:bg-blue-700 to hover:bg-indigo-700
+            -->
+            <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-300" style="min-height: 44px;">
+              Add Transaction
+            </button>
+          </form>
+        </section>
+        
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Investment Portfolio</h3>
+          <ul id="investment-list" class="space-y-3 mb-4">
+          </ul>
+          
+          <form id="investment-form" class="mt-4 pt-4 border-t dark:border-slate-600">
+            <h4 class="text-md font-semibold mb-2">Add Investment</h4>
+            <div class="flex flex-col gap-3">
+              <input type="text" id="investment-name" placeholder="Investment Name" required class="w-full p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 text-sm dark:text-gray-400">₹</span>
+                <input type="number" id="investment-value" placeholder="Current Value" min="0.01" step="0.01" required class="w-full pl-7 p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
+              </div>
+              <p id="investment-form-error" class="text-sm text-negative hidden">Please fill out all fields.</p>
+              <button type="submit" class="w-full bg-indigo-600 text-white p-2.5 rounded-lg font-semibold text-sm hover:bg-indigo-700 transition-colors duration-300" style="min-height: 40px;">
+                Add Investment
+              </button>
+            </div>
+          </form>
+        </section>
+        
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Settings</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            This will permanently delete all transactions and investment data.
+          </p>
+          <button id="reset-all-btn" class="w-full bg-negative text-white p-3 rounded-lg font-semibold hover:bg-red-700 transition-colors duration-300" style="min-height: 44px;">
+            Reset All Data
+          </button>
+        </section>
+
+      </div>
+    </main>
+  </div>
+  
+  <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 max-w-sm w-full">
+          <div class="flex justify-between items-center mb-4">
+              <h3 id="modal-title" class="text-lg font-semibold">Message</h3>
+              <button id="modal-close-btn" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+              </button>
+          </div>
+          <p id="modal-message" class="text-gray-700 dark:text-gray-300 mb-6">This is a success message!</p>
+          <button id="modal-ok-btn" class="w-full bg-primary text-white p-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              OK
+          </button>
+      </div>
+  </div>
+  
+  <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+      <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 max-w-sm w-full">
+          <div class="flex items-start mb-4">
+              <div class="p-2 bg-red-100 rounded-full text-negative mr-3">
+                  <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              </div>
+              <div>
+                  <h3 id="confirm-modal-title" class="text-lg font-semibold">Are you sure?</h3>
+                  <p id="confirm-modal-message" class="text-gray-700 dark:text-gray-300 mt-1">This action cannot be undone.</p>
+              </div>
+          </div>
+          <div class="flex justify-end gap-3 mt-6">
+              <button id="confirm-no-btn" class="px-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-800 dark:text-gray-100 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-slate-500 transition-colors">
+                  Cancel
+              </button>
+              <button id="confirm-yes-btn" class="px-4 py-2 bg-negative text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
+                  Yes, Delete
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
+
