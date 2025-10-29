@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<!-- The 'dark' class is now added/removed by JavaScript -->
 <html lang="en-IN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Personal Finance Dashboard</title>
   
-  <!-- External Libraries -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   
-  <!-- Your Custom Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 
-  <!-- Immediate script to set theme and prevent FOUC (Flash of Unstyled Content) -->
   <script>
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
@@ -23,10 +19,9 @@
     }
   </script>
   
-  <!-- Tailwind CSS Configuration -->
   <script>
     tailwind.config = {
-      darkMode: 'class', // Kept as 'class'
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
@@ -57,7 +52,6 @@
       <h1 class="text-3xl font-bold text-primary">Finance Dashboard</h1>
       <div class="flex items-center gap-4 mt-2 sm:mt-0">
         <span class="text-gray-600 dark:text-gray-400 text-sm">Welcome back, User!</span>
-        <!-- Theme Toggle Button -->
         <button id="theme-toggle-btn" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
           <span class="sr-only">Toggle theme</span>
           <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
@@ -217,11 +211,7 @@
               <input type="date" id="transaction-date" name="date" required class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:border-slate-600 dark:placeholder-gray-400">
             </div>
             <p id="form-error" class="text-sm text-negative hidden">Please fill out all fields correctly.</p>
-            <!-- 
-              *** THIS IS THE CHANGE ***
-              Changed bg-primary to bg-indigo-600
-              Changed hover:bg-blue-700 to hover:bg-indigo-700
-            -->
+            
             <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors duration-300" style="min-height: 44px;">
               Add Transaction
             </button>

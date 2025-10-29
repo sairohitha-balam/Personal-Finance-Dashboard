@@ -1,7 +1,5 @@
-// Wait for the DOM to be fully loaded before running any script
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- STATE MANAGEMENT ---
   const getInitialTransactions = () => [
     { id: 1, type: 'income', description: 'Monthly Salary', amount: 85000, category: 'Income', date: '2025-10-01' },
     { id: 2, type: 'expense', description: 'Groceries', amount: 5000, category: 'Groceries', date: '2025-10-05' },
@@ -24,19 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
   let transactions = JSON.parse(localStorage.getItem('transactions')) || getInitialTransactions();
   let investments = JSON.parse(localStorage.getItem('investments')) || getInitialInvestments();
 
-  // --- CHART.JS INSTANCE VARIABLES ---
   let expensePieChart, incomeExpenseBarChart, spendingLineChart;
   
   const chartColors = {
-      Groceries: 'rgba(234, 179, 8, 0.9)',  // yellow-500
-      Utilities: 'rgba(59, 130, 246, 0.9)', // blue-500
-      Rent: 'rgba(239, 68, 68, 0.9)',      // red-500
-      Entertainment: 'rgba(139, 92, 246, 0.9)', // violet-500
-      Other: 'rgba(107, 114, 128, 0.9)',   // gray-500
-      Income: 'rgba(34, 197, 94, 0.9)',     // green-500
+      Groceries: 'rgba(234, 179, 8, 0.9)',
+      Utilities: 'rgba(59, 130, 246, 0.9)',
+      Rent: 'rgba(239, 68, 68, 0.9)',
+      Entertainment: 'rgba(139, 92, 246, 0.9)',
+      Other: 'rgba(107, 114, 128, 0.9)',
+      Income: 'rgba(34, 197, 94, 0.9)',
   };
-  
-  // --- DOM ELEMENT SELECTORS ---
+
   const totalBalanceEl = document.getElementById('total-balance');
   const monthlyIncomeEl = document.getElementById('monthly-income');
   const totalExpensesEl = document.getElementById('total-expenses');
@@ -65,10 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const confirmYesBtn = document.getElementById('confirm-yes-btn');
   const confirmNoBtn = document.getElementById('confirm-no-btn');
   
-  // NEW: Theme Toggle Selector
   const themeToggleBtn = document.getElementById('theme-toggle-btn');
-
-  // --- HELPER FUNCTIONS ---
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
@@ -133,9 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
       confirmYesBtn.addEventListener('click', confirmHandler, { once: true });
       confirmNoBtn.addEventListener('click', cancelHandler, { once: true });
   };
-
-
-  // --- CORE LOGIC FUNCTIONS ---
 
   const updateSummaryCards = () => {
     const currentMonth = new Date().getMonth();
@@ -279,19 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
       };
   };
 
-  /**
-   * Destroys old charts (if they exist) and creates new ones with updated data.
-   */
   const updateCharts = () => {
       const data = getChartData();
       
-      // NEW: Dynamically set chart colors based on theme
       const isDarkMode = document.documentElement.classList.contains('dark');
       const chartTextColor = isDarkMode ? '#94a3b8' : '#6b7280'; // slate-400 or gray-500
       const chartGridColor = isDarkMode ? 'rgba(100, 116, 139, 0.2)' : 'rgba(0, 0, 0, 0.1)';
       const pieBorderColor = isDarkMode ? '#1e293b' : '#ffffff'; // slate-800 or white
 
-      // Set the global default color for all charts
       Chart.defaults.color = chartTextColor;
       
       const chartTooltipCallbacks = {
@@ -389,7 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   };
   
-  // --- EVENT HANDLERS ---
   const handleAddTransaction = (e) => {
       e.preventDefault();
       const description = document.getElementById('transaction-description').value.trim();
@@ -491,7 +475,6 @@ document.addEventListener('DOMContentLoaded', () => {
       );
   };
   
-  // NEW: Event handler for the theme toggle
   const handleThemeToggle = () => {
     const isDark = document.documentElement.classList.toggle('dark');
     if (isDark) {
@@ -499,13 +482,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       localStorage.theme = 'light';
     }
-    // Re-render charts with new theme colors
     updateCharts();
-    // Update the toggle button icon
     lucide.createIcons();
   };
-
-  // --- INITIALIZATION ---
   
   transactionForm.addEventListener('submit', handleAddTransaction);
   investmentForm.addEventListener('submit', handleAddInvestment);
@@ -517,17 +496,14 @@ document.addEventListener('DOMContentLoaded', () => {
   transactionTableBody.addEventListener('click', handleTransactionTableClick);
   investmentListEl.addEventListener('click', handleInvestmentListClick);
   resetAllBtn.addEventListener('click', handleResetAll);
-  
-  // NEW: Add listener for the theme toggle button
   themeToggleBtn.addEventListener('click', handleThemeToggle);
   
   document.getElementById('transaction-date').value = new Date().toISOString().split('T')[0];
   
   updateCategoryOptions();
-  updateUI(); // This will call updateCharts() which now auto-detects the theme
+  updateUI();
   lucide.createIcons();
 
-  // --- ANIMATION ON LOAD ---
   try {
     const header = document.getElementById('dashboard-header');
     const summaryCards = document.querySelectorAll('#summary-cards > div');
